@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "mongo-opsmgr.fullname" . }}-test-connection"
+  labels:
+    app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+    helm.sh/chart: {{ include "mongo-opsmgr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['{{ include "mongo-opsmgr.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

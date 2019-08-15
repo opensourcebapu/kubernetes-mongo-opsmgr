@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mongo-opsmgr.fullname" . }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+    helm.sh/chart: {{ include "mongo-opsmgr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}        
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/bin/bash"
+          args:
+            - "-c"
+            - "/opt/mongodb/mms/bin/mms-gen-key -u mongodb-mms -f /etc/mongodb-mms/gen.key"
+          volumeMounts:
+          - name: mms-configs
+            mountPath: /opt/mongodb/mms/conf
+          - name: keydir
+            mode: 777
+            mountPath: /etc/mongodb-mms/
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+          - name: mms-configs
+            mountPath: /opt/mongodb/mms/conf
+          - name: keydir
+            mountPath: /etc/mongodb-mms/
+            mode: 777
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: mms-configs
+          configMap:
+            name: {{ include "mongo-opsmgr.fullname" . }}-configmap
+        - name: keydir
+          emptyDir:
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

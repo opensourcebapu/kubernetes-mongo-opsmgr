@@ -1,0 +1,80 @@
+# Default values for mongo-opsmgr.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Can change this to be more than one when k8s HA feature is developed
+replicaCount: 1
+
+image:
+  name: opensourcebapu/mongodb-opsmgr-centos
+  tag: 4.0.12.50517.20190605T1533Z-3
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  clusterIP: None
+  port: 8080
+
+#Values to pass to conf file for connecting to appdb
+appdb:
+  host: mongo-replicaset-0:27017,mongo-replicaset-1:27017,mongo-replicaset-2:27017
+#  host: small-mongodb-replicaset
+  port: 27017
+  #username:
+  #password:
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths:
+    - /
+  hosts:
+    - mongoopsmgr.example.domain
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+   #refer to https://docs.opsmanager.mongodb.com/current/core/requirements/ for sizing info and/or contact your MongoDB rep
+   limits:
+    cpu: 2000m
+    memory: 2Gi
+   requests:
+    cpu: 500m
+    memory: 1Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+#Place your custom gen.key file under secrets/ and set this to Yes - not working yet
+CustomGenKey: "No"
+
+securityContext:
+  enabled: true
+  runAsUser: 999
+  fsGroup: 998
+  runAsNonRoot: true
+
+persistentVolume:
+  enabled: true
+  ## mongodb-replicaset data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessModes:
+    - ReadWriteOnce
+  size: 100Mi
+  annotations: {}

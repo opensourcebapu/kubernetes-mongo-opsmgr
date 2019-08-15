@@ -1,0 +1,19 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: opsmgr-keyvol
+spec:
+    accessModes:
+    {{- range .Values.persistentVolume.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+    resources:
+      requests:
+        storage: {{ .Values.persistentVolume.size | quote }}
+    {{- if .Values.persistentVolume.storageClass }}
+    {{- if (eq "-" .Values.persistentVolume.storageClass) }}
+    storageClassName: ""
+    {{- else }}
+    storageClassName: "{{ .Values.persistentVolume.storageClass }}"
+    {{- end }}
+    {{- end }}

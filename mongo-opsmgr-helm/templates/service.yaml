@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mongo-opsmgr.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+    helm.sh/chart: {{ include "mongo-opsmgr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if eq .Values.service.clusterIP "None" }} 
+  clusterIP: None
+{{- end }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

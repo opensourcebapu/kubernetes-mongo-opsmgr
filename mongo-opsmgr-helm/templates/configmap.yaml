@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mongo-opsmgr.fullname" . }}-configmap
+  labels:
+    app.kubernetes.io/name: {{ include "mongo-opsmgr.name" . }}
+    helm.sh/chart: {{ include "mongo-opsmgr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  conf-mms.properties: |
+{{ tpl (.Files.Get "config/conf-mms.properties") . | indent 4 }}
