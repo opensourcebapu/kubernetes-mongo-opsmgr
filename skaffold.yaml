@@ -13,7 +13,7 @@ build:
 deploy:
   helm:
     releases:
-    - name: mongoopsmgr
+    - name: test
       namespace: mongodb
       chartPath: mongo-opsmgr-helm
       #wait: true

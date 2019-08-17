@@ -10,7 +10,7 @@ services:
       driver: none
 
   opsmanager:
-    image: opensourcebapu/mongodb-opsmgr-centos
+    image: opensourcebapu/mongodb-opsmgr-centos:4.0.12.50517.20190605T1533Z-1-a
     network_mode: host
 #    ports:
 #      - "18080:8080"

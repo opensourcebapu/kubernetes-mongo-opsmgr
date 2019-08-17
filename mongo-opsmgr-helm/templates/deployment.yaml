@@ -22,36 +22,60 @@ spec:
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
-        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}        
-      initContainers:
-        - name: {{ .Chart.Name }}-init
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - "/bin/bash"
-          args:
-            - "-c"
-            - "/opt/mongodb/mms/bin/mms-gen-key -u mongodb-mms -f /etc/mongodb-mms/gen.key"
-          volumeMounts:
-          - name: mms-configs
-            mountPath: /opt/mongodb/mms/conf
-          - name: keydir
-            mode: 777
-            mountPath: /etc/mongodb-mms/
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+      # For custom Key generation/HA mode, this section needs work        
+      # initContainers:
+      #   - name: {{ .Chart.Name }}-init
+      #     image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+      #     imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #     command:
+      #       - "/bin/bash"
+      #     args:
+      #       - "-c"
+      #       - "/opt/mongodb/mms/bin/mms-gen-key -u ${MMS_USER} -f ${ENC_KEY_PATH}"
+      #     env:
+      #       - name: MMS_USER
+      #         value: {{ .Values.env.MMS_USER }}
+      #       - name: ENC_KEY_PATH
+      #default  value: /etc/mongodb-mms/gen.key
+      #         value: {{ .Values.env.ENC_KEY_PATH }}
+      #     volumeMounts:
+      #       - name: mms-configs
+      #         mountPath: /opt/mongodb/mms/conf
+      #       - name: keyDir
+      #         mode: 777
+      #         mountPath: /etc/mongodb-mms/
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Enable the command and args lines for debug mode 
+          # command: [ "/bin/bash", "-c", "--" ]
+          # args: [ "while true; do sleep 30; done;" ]
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
           volumeMounts:
-          - name: mms-configs
-            mountPath: /opt/mongodb/mms/conf
-          - name: keydir
-            mountPath: /etc/mongodb-mms/
-            mode: 777
+            - name: mms-configs
+              mountPath: /opt/mongodb/mms/conf
+            - name: keydir
+              mountPath: /etc/mongodb-mms/
+              #To do - ideal permissions for this mount
+              mode: 770
+            - name: releasedir
+              #To do - ideal permissions for this mount
+              mountPath: /opt/mongodb/mms/mongodb-releases/
+              mode: 770
+          env:
+            - name: MMS_USER
+              value: {{ .Values.env.MMS_USER }}
+            - name: ENC_KEY_PATH
+     #default value: /etc/mongodb-mms/gen.key
+              value: {{ .Values.env.ENC_KEY_PATH }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -63,7 +87,19 @@ spec:
           configMap:
             name: {{ include "mongo-opsmgr.fullname" . }}-configmap
         - name: keydir
+      {{- if .Values.persistentVolume.keyVol.enabled }}
+          persistentVolumeClaim:
+            claimName: opsmgr-keyvol
+      {{- else }}
           emptyDir:
+      {{- end }}
+        - name: releasedir
+      {{- if .Values.persistentVolume.releaseVol.enabled }}
+          persistentVolumeClaim:
+            claimName: opsmgr-releasevol
+      {{- else }}
+          emptyDir:
+      {{- end }}        
     {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}

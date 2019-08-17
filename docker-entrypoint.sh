@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #thanks to folks over at gradecam for this script
-set -euxo pipefail
+set -exo pipefail
 
 stop_mms()
 {

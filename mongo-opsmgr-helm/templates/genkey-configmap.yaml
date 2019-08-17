@@ -1,4 +1,4 @@
-{{ if ne .Values.CustomGenKey "No" }}
+{{ if ne .Values.genKeyCreation "No" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

@@ -1,0 +1,45 @@
+---
+{{- if .Values.persistentVolume.keyVol.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: opsmgr-keyvol
+spec:
+    accessModes:
+    {{- range .Values.persistentVolume.keyVol.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+    resources:
+      requests:
+        storage: {{ .Values.persistentVolume.keyVol.size | quote }}
+    {{- if .Values.persistentVolume.keyVol.storageClass }}
+    {{- if (eq "-" .Values.persistentVolume.keyVol.storageClass) }}
+    storageClassName: ""
+    {{- else }}
+    storageClassName: "{{ .Values.persistentVolume.keyVol.storageClass }}"
+    {{- end }}
+    {{- end }}
+{{- end }}
+---
+{{- if .Values.persistentVolume.releaseVol.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: opsmgr-releasevol
+spec:
+    accessModes:
+    {{- range .Values.persistentVolume.releaseVol.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+    resources:
+      requests:
+        storage: {{ .Values.persistentVolume.releaseVol.size | quote }}
+    {{- if .Values.persistentVolume.releaseVol.storageClass }}
+    {{- if (eq "-" .Values.persistentVolume.releaseVol.storageClass) }}
+    storageClassName: ""
+    {{- else }}
+    storageClassName: "{{ .Values.persistentVolume.releasevol.storageClass }}"
+    {{- end }}
+    {{- end }}
+{{- end }}
+---

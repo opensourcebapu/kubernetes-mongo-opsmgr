@@ -12,8 +12,8 @@ RUN yum makecache fast \
     && yum clean all
 
 #Get and install Ops Manager, remove rpm to make image smaller
-RUN mkdir -p /downloads/ \
-    && mkdir -p /opsuser/
+RUN mkdir -p /downloads/ 
+
 WORKDIR /downloads/
 
 RUN curl -O https://downloads.mongodb.com/on-prem-mms/rpm/mongodb-mms-${opsmgsver}.x86_64.rpm \
@@ -22,15 +22,35 @@ RUN curl -O https://downloads.mongodb.com/on-prem-mms/rpm/mongodb-mms-${opsmgsve
     && rm -f mongodb-mms-${opsmgsver}.x86_64.rpm 
 
 #Expose Ports
-EXPOSE 8080/tcp
+EXPOSE 8080/tcp 8443/tcp
 
-ADD bin/mongodb-mms /opt/mongodb/mms/bin/mongodb-mms
+#Set required permissions. Setting recursive permissions on /opt/mongodb will lead to image size of over 2.3 GB
+RUN chown -R mongodb-mms:mongodb-mms /etc/mongodb-mms/ \
+    && chmod u+s /etc/mongodb-mms/ \
+    && chmod g+s /etc/mongodb-mms/ \
+    && mkdir -p /var/log/mongodb/ \
+    && chown -R mongodb-mms:mongodb-mms /var/log/mongodb/ \
+    && chmod u+s /var/log/mongodb/ \
+    && chmod g+s /var/log/mongodb/ \
+    && chown -R mongodb-mms:mongodb-mms /opt/mongodb/mms/mongodb-releases/ \
+    && chmod u+s /opt/mongodb/mms/mongodb-releases/ \
+    && chmod g+s /opt/mongodb/mms/mongodb-releases/ \
+    && chown -R mongodb-mms:mongodb-mms /opt/mongodb/mms/agent/ \
+    && chmod g+s /opt/mongodb/mms/agent/ \
+    && chmod g+s /opt/mongodb/mms/agent/
+    
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+WORKDIR /
+RUN chmod +x /docker-entrypoint.sh
 
-COPY docker-entrypoint.sh /opsuser/docker-entrypoint.sh
-WORKDIR /opsuser/
-RUN chmod +x docker-entrypoint.sh
+USER mongodb-mms
+
+RUN ls -liah /opt/mongodb \
+    && ls -liah /opt/mongodb/mms \
+    && ls -liah /opt/mongodb/mms/mongodb-releases \
+    && id
 
 #Start ops manager
-ENTRYPOINT [ "/opsuser/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
 
 CMD ["mongodb-mms"]
