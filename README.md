@@ -3,7 +3,7 @@
 ## Deploying using skaffold
 
 Refer to the default [values file](mongo-opsmgr-helm/values.yaml) and [Configuration](#Configuration) below . Deploy with [Skaffold](https://github.com/GoogleContainerTools/skaffold) using the following command
-```bash
+```console
 skaffold deploy
 ```
 
