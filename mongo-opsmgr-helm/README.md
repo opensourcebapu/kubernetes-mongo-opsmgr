@@ -1,8 +1,5 @@
 # Kubernetes Mongo OpsManager Deployment
 
-## TODO: insert skaffold info
-
-
 ## Helm Chart info
 
 ## Prerequisites Details
