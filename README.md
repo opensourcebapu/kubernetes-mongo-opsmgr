@@ -2,7 +2,7 @@
 
 ## Deploying using skaffold
 
-Refer to the values settings below. Deploy with [Skaffold](https://github.com/GoogleContainerTools/skaffold) using the following command
+Refer to the default [values file](mongo-opsmgr-helm/values.yaml) and [Configuration](#Configuration) below . Deploy with [Skaffold](https://github.com/GoogleContainerTools/skaffold) using the following command
 ```bash
 skaffold deploy
 ```
