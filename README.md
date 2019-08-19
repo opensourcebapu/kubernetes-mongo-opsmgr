@@ -57,7 +57,7 @@ The following table lists the configurable parameters of the chart and their def
 | `persistentVolume.releaseVol.enabled`    If `true`, create pvc for mongodb releases storage                     | `true`                                              |
 | `persistentVolume.releaseVol.storageClass`     | Persistent volume storage class                                | ``                                                  |
 | `persistentVolume.releaseVol.accessModes`      | Persistent volume access modes                                 | `[ReadWriteOnce]`                                   |
-| `persistentVolume.releaseVol.size`             | Persistent volume size                                         | `50Mi`                                              |
+| `persistentVolume.releaseVol.size`             | Persistent volume size                                         | `5Gi`                                              |
 | `tolerations`                       | List of node taints to tolerate                                           | `[]`                                                |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
