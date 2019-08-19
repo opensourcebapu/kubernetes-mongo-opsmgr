@@ -24,7 +24,7 @@ env:
 #Values to pass to conf file for connecting to appdb
 appdb:
   host: mongo-replicaset-0:27017,mongo-replicaset-1:27017,mongo-replicaset-2:27017
-  port: 27017
+  #port: 27017
   #username:
   #password:
 
