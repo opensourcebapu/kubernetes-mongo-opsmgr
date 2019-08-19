@@ -1,7 +1,35 @@
 # Kubernetes Mongo OpsManager Deployment
 
-## TODO: insert skaffold info
+## Deploying using skaffold
 
+Refer to the values settings below. Deploy with [Skaffold](https://github.com/GoogleContainerTools/skaffold) using the following command
+```bash
+skaffold deploy
+```
+
+Default deployment Configuration for skaffold.yaml
+```yml
+apiVersion: skaffold/v1beta13
+kind: Config
+deploy:
+  helm:
+    releases:
+    - name: test
+      namespace: mongodb
+      chartPath: mongo-opsmgr-helm
+      #wait: true
+      valuesFiles:
+      - mongo-opsmgr-helm/values.yaml
+      #recreatePods will pass --recreate-pods to helm upgrade
+      #recreatePods: true
+      #overrides builds an override values.yaml file to run with the helm deploy
+      #overrides:
+      # some:
+      #   key: someValue
+      #setValues get appended to the helm deploy with --set.
+      #setValues:
+        #some.key: someValue
+```
 
 ## Helm Chart info
 
