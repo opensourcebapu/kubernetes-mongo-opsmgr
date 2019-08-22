@@ -3,3 +3,8 @@ appVersion: "1.0"
 description: A Helm chart for MongoDB Ops Manager
 name: mongo-opsmgr
 version: 0.1.0
+maintainers:
+  - name: rajinator
+    url: github.com/rajinator
+  - name: joravar
+    url: github.com/joravar
