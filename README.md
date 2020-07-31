@@ -69,9 +69,9 @@ The following table lists the configurable parameters of the chart and their def
 | `appdb.host`                        | Ops Manager backing mongodb URI (URI:port)                                | `mongodb-replicaset-0:27017,mongodb-replicaset-1:27017,mongodb-replicaset-2:27017`                        |
 | `ingress.enabled`                   | If `true` enable creation of ingress resoource                            | `false`                                             |
 | `resources.limits.cpu`              | Pod cpu limit                                                             | `2000m`                                             |
-| `resources.limits.memory`           | Pod memory limit                                                          | `2Gi`                                               |
-| `resources.limits.cpu`              | Pod cpu requests                                                          | `500m`                                              |
-| `resources.limits.memory`           | Pod memory requests                                                       | `2Gi`                                               |
+| `resources.limits.memory`           | Pod memory limit                                                          | `5Gi`                                               |
+| `resources.requests.cpu`            | Pod cpu requests                                                          | `500m`                                              |
+| `resources.requests.memory`         | Pod memory requests                                                       | `2Gi`                                               |
 | `nodeSelector`                      | Node labels for pod assignment                                            | `{}`                                                |
 | `affinity`                          | Node/pod affinities                                                       | `{}`                                                |
 | `securityContext.enabled`           | Enable security context                                                   | `true`                                              |
